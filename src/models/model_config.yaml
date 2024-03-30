@@ -1,0 +1,14 @@
+model_type: yolov8
+creds_config_path: ./../../Creds.yaml
+roboflow_workspace: footballtrackingproject
+roboflow_project: football-players-no-tactical
+roboflow_project_version: 2
+train_params:
+  model: yolov8x.pt
+  epochs: 200
+  patience: 100
+  batch: 16
+  imgsz: 640
+  save: True
+  optimizer: auto
+

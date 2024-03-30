@@ -1,4 +1,6 @@
-
+Creds.yaml
 */.DS_Store
 .DS_Store
 data/*
+models/*
+.idea/*
