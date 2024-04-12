@@ -5,13 +5,17 @@ tactical_map_path: tactical map.jpg
 test_video_path: test vid.mp4
 players_model_path: ../../models/tactical_players_yolov8/weights/best.pt
 keypoints_model_path: ../../models/keypoints_yolov8/weights/best.pt
-output_path: ../../outputs
+output_path: ../../output
 test_video: True
 save_output: True
+show_keypoints_detections: True
+show_players_detections: True
+show_ball_history: True
 update_homography_on_every_frame: False
 players_model_conf_thresh: 0.50
-keypoints_model_conf_thresh: 0.70
-keypoints_displacement_mean_tol: 10 # Set keypoints average displacement tolerance level (in pixels) [set to -1 to always update homography matrix]
+players_model_iou_thresh: 0.90
+keypoints_model_conf_thresh: 0.50
+keypoints_displacement_mean_tol: 20 # Set keypoints average displacement tolerance level (in pixels)
 nbr_frames_no_ball_thresh: 30       # Threshold for number of frames with no ball to reset ball track (frames)
 ball_track_dist_thresh: 100         # Distance threshold for ball tracking (pixels)
 max_track_length: 35                # Maximum ball track length (detections)

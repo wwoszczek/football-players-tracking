@@ -78,12 +78,13 @@ def get_video_path(config_dict: dict) -> str:
 def get_detection_information(detection_result: list) -> Tuple:
     bounding_boxes_xyxy = detection_result[0].boxes.xyxy.cpu().numpy()
     bounding_boxes_xywh = detection_result[0].boxes.xywh.cpu().numpy()
-    labels = list(detection_result[0].boxes.label.cls.cpu().numpy())
+    labels = list(detection_result[0].boxes.cls.cpu().numpy())
     confs = list(detection_result[0].boxes.conf.cpu().numpy())
 
     return bounding_boxes_xyxy, bounding_boxes_xywh, labels, confs
 
 
+# TODO - this function probably needs to be fixed
 def get_destination_coords(
     source_coords: np.ndarray, homography_matrix: np.ndarray
 ) -> np.ndarray:
@@ -102,3 +103,34 @@ def get_destination_coords(
     dest_coords = dest_coords_normalized[:2, :].T
 
     return dest_coords
+
+
+def update_ball_tracking_history(
+    ball_tracking_history: dict,
+    ball_src_coords: np.ndarray,
+    ball_dst_coords: np.ndarray,
+    config_dict: dict,
+) -> dict:
+    # Pre-calculate the integer positions once
+    src_pos_int = (int(ball_src_coords[0, 0]), int(ball_src_coords[0, 1]))
+    dst_pos_int = (int(ball_dst_coords[0, 0]), int(ball_dst_coords[0, 1]))
+
+    # Determine whether to append to the current history or reset it
+    if (
+        ball_tracking_history["src"]
+        and np.linalg.norm(ball_src_coords - ball_tracking_history["src"][-1])
+        >= config_dict["ball_track_dist_thresh"]
+    ):
+        # If the ball moved more than the threshold, reset history
+        ball_tracking_history["src"] = [src_pos_int]
+        ball_tracking_history["dst"] = [dst_pos_int]
+    else:
+        # Otherwise, append the new position to the history
+        ball_tracking_history["src"].append(src_pos_int)
+        ball_tracking_history["dst"].append(dst_pos_int)
+
+    if len(ball_tracking_history) > config_dict["max_track_length"]:
+        ball_tracking_history["src"].pop(0)
+        ball_tracking_history["dst"].pop(0)
+
+    return ball_tracking_history

@@ -1,5 +1,5 @@
 # Classes
 names:
-  0: player
-  1: referee
-  2: ball
+  0: ball
+  1: player
+  2: referee
