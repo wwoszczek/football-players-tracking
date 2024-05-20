@@ -2,7 +2,7 @@ keypoints_pitch_map_position_path: keypoints_pitch_map_positions.json
 keypoints_classes_path: original_keypoints_classes.yaml
 players_classes_path: players_classes.yaml
 tactical_map_path: tactical map.jpg
-test_video_path: test vid.mp4
+test_video_path: demo_vid_1.mp4
 players_model_path: ../../models/tactical_players_yolov8/weights/best.pt
 keypoints_model_path: ../../models/keypoints_yolov8/weights/best.pt
 output_path: ../../output

@@ -5,6 +5,8 @@ import cv2
 import skimage
 from PIL import Image
 from tqdm import tqdm
+import supervision as sv
+import uuid
 from ultralytics import YOLO
 from sklearn.metrics import mean_squared_error
 from src.tracking.utils import (
@@ -43,6 +45,8 @@ COLORS_DICT, COLORS_LIST_LAB = get_team_colors(CONFIG_DICT)
 
 model_players = YOLO(CONFIG_DICT["players_model_path"])
 model_keypoints = YOLO(CONFIG_DICT["keypoints_model_path"])
+
+tracker = sv.ByteTrack()
 
 cap = cv2.VideoCapture(VIDEO_PATH)
 tactical_map_clean = cv2.imread(TACTICAL_MAP_PATH)
@@ -105,6 +109,9 @@ for frame_idx in tqdm(range(tot_nbr_frames)[200:300]):
     players_bb_xyxy, players_bb_xywh, players_labels, players_confs = (
         get_detection_information(detection_players)
     )
+
+    players_ultralitics_result = detection_players[0]
+
     keypoints_bb_xyxy, keypoints_bb_xywh, keypoints_labels, keypoints_confs = (
         get_detection_information(detection_keypoints)
     )
@@ -234,6 +241,12 @@ for frame_idx in tqdm(range(tot_nbr_frames)[200:300]):
             obj_img = frame_rgb[
                 int(bbox[1]) : int(bbox[3]), int(bbox[0]) : int(bbox[2])
             ]  # Crop bbox out of the frame
+
+            cv2.imwrite(
+                f"/Users/wwoszczek/Desktop/studia/magister/football-players-tracking/output/players/player_{idx}_{label}_{uuid.uuid4()}.jpg",
+                obj_img,
+            )
+
             obj_img_w, obj_img_h = obj_img.shape[1], obj_img.shape[0]
             center_filter_x1 = np.max([(obj_img_w // 2) - (obj_img_w // 5), 1])
             center_filter_x2 = (obj_img_w // 2) + (obj_img_w // 5)
@@ -317,6 +330,19 @@ for frame_idx in tqdm(range(tot_nbr_frames)[200:300]):
     players_counter = 0  # Initializing counter of detected players
     annotated_frame = frame
 
+    # get tracks
+
+    tracks = sv.Detections.from_ultralytics(players_ultralitics_result)
+    # tracks["names"] = [
+    #     model_players.model.names[class_id] for class_id in tracks.class_id
+    # ]
+
+    detections_with_tracks = tracker.update_with_detections(tracks)
+    track_id_dict = {}
+    for frame_detection in detections_with_tracks:
+        # bbox_xyxy : track_id
+        track_id_dict[str(frame_detection[0])] = frame_detection[4]
+
     # Loop over all detected object by players detection model
     for i in range(players_bb_xyxy.shape[0]):
         conf = players_confs[i]  # Get confidence of current detected object
@@ -324,6 +350,11 @@ for frame_idx in tqdm(range(tot_nbr_frames)[200:300]):
             team_name = list(COLORS_DICT.keys())[
                 players_teams_list[players_counter]
             ]  # Get detected player team prediction
+            track_id = (
+                track_id_dict[str(players_bb_xyxy[i])]
+                if str(players_bb_xyxy[i]) in track_id_dict
+                else 0
+            )
             color_rgb = COLORS_DICT[team_name][0]  # Get detected player team color
             color_bgr = color_rgb[::-1]  # Convert color to bgr
             if CONFIG_DICT["show_players_detections"]:
@@ -338,7 +369,8 @@ for frame_idx in tqdm(range(tot_nbr_frames)[200:300]):
 
                 annotated_frame = cv2.putText(
                     annotated_frame,
-                    team_name + f" {conf:.2f}",  # Add team name annotations
+                    team_name
+                    + f" {conf:.2f} ID: {track_id}",  # Add team name annotations
                     (int(players_bb_xyxy[i, 0]), int(players_bb_xyxy[i, 1]) - 10),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.5,
