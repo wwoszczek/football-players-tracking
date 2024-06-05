@@ -1,0 +1,10 @@
+test_video_path: ./input/08fd33_5.mp4
+output_video_path: ./output
+players_model_path: ./models/no_tactical_players_yolov8/weights/best.pt
+keypoints_model_path: ./models/keypoints_yolov8/weights/best.pt
+
+
+
+
+
+

@@ -1,0 +1,30 @@
+# Classes
+names:
+  0: BL18MC
+  1: BL18ML
+  2: BL6MC
+  3: BL6ML
+  4: BLArc
+  5: BLC
+  6: BR18MC
+  7: BR18ML
+  8: BR6MC
+  9: BR6ML
+  10: BRArc
+  11: BRC
+  12: LMC
+  13: LML
+  14: RMC
+  15: RML
+  16: TL18MC
+  17: TL18ML
+  18: TL6MC
+  19: TL6ML
+  20: TLArc
+  21: TLC
+  22: TR18MC
+  23: TR18ML
+  24: TR6MC
+  25: TR6ML
+  26: TRArc
+  27: TRC
