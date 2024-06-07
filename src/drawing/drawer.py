@@ -18,7 +18,7 @@ class Drawer:
 
         cv2.ellipse(
             frame,
-            center=(int(x_center), int(y_center - height // 2)),
+            center=(int(x_center), int(y_center + height // 2)),
             axes=(int(width), int(0.35 * width)),
             angle=0.0,
             startAngle=-45,
@@ -31,8 +31,8 @@ class Drawer:
         if track_id is not None:
             x1_rect = x_center - self.rectangle_width // 2
             x2_rect = x_center + self.rectangle_width // 2
-            y1_rect = (y_center - height // 2 - self.rectangle_height // 2) + 20
-            y2_rect = (y_center - height // 2 + self.rectangle_height // 2) + 20
+            y1_rect = (y_center + height // 2 - self.rectangle_height // 2) + 20
+            y2_rect = (y_center + height // 2 + self.rectangle_height // 2) + 20
 
             cv2.rectangle(
                 frame,
@@ -70,6 +70,38 @@ class Drawer:
 
         return frame
 
+    def _draw_triangle_xy_with_caption(
+        self, frame: np.ndarray, xy: List, caption: str = None
+    ) -> np.ndarray:
+        """
+        mainly for drawing keypoints with the labels to check if the order has to be changed
+        """
+        x, y = xy
+        x, y = int(x), int(y)
+
+        triangle_points = np.array(
+            [
+                [x, y],
+                [x - 10, y - 20],
+                [x + 10, y - 20],
+            ]
+        )
+
+        cv2.drawContours(frame, [triangle_points], 0, (255, 255, 255), cv2.FILLED)
+        cv2.drawContours(frame, [triangle_points], 0, (0, 0, 0), 2)
+
+        cv2.putText(
+            frame,
+            f"{caption}",
+            (int(x), int(y - 25)),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (0, 0, 0),
+            2,
+        )
+
+        return frame
+
     def draw_annotations(self, video_frames, tracks, team_ball_control=None):
         output_video_frames = []
         for frame_num, frame in enumerate(video_frames):
@@ -98,6 +130,23 @@ class Drawer:
             # Draw ball
             for ball in ball_dict.values():
                 frame = self._draw_traingle(frame, ball["bbox"], (0, 255, 0))
+
+            output_video_frames.append(frame)
+
+        return output_video_frames
+
+    def draw_keypoints(self, video_frames, keypoints):
+        output_video_frames = []
+        for frame_num, frame in enumerate(video_frames):
+            frame = frame.copy()
+
+            keypoints_dict = keypoints["keypoints"][frame_num]
+
+            # Draw keypoints
+            for keypoint_id, keypoint in keypoints_dict.items():
+                frame = self._draw_triangle_xy_with_caption(
+                    frame, keypoint, caption=keypoint_id
+                )
 
             output_video_frames.append(frame)
 

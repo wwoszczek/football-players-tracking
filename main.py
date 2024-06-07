@@ -1,5 +1,9 @@
 from src.utils.utils import read_video, save_video
 from src.tracking.tracker import Tracker
+from src.tracking.keypoints_detector import KeypointsDetector
+from src.tracking.interpolator import Interpolator
+from src.view_transformer.view_transformer import ViewTransformer
+from src.field.football_field import FootballField
 from src.drawing.drawer import Drawer
 import yaml
 
@@ -13,14 +17,42 @@ if __name__ == "__main__":
 
     # Initialize Tracker
     tracker = Tracker(CONFIG_DICT["players_model_path"])
-    tracks = tracker.get_object_tracks(video_frames, read_from_cache=False)
+    tracks = tracker.get_object_tracks(
+        video_frames,
+        read_from_cache=True,
+        cache_path=CONFIG_DICT["tracking_cache_path"],
+    )
+
+    # Interpolate ball detections
+    interpolator = Interpolator()
+    tracks["ball"] = interpolator.interpolate_ball_positions(tracks["ball"])
+
+    # Initialize keypoints detector
+    keypoints_detector = KeypointsDetector(CONFIG_DICT["keypoints_model_path"])
+    keypoints = keypoints_detector.get_keypoints_positions(
+        video_frames,
+        read_from_cache=True,
+        cache_path=CONFIG_DICT["keypoints_cache_path"],
+    )
+
+    # Football field class
+    football_field = FootballField()
+    print(football_field.config.vertices)
+
+    # Initialize view transformer which will calculate target points based on homography matrices
+    view_transformer = ViewTransformer(keypoints, football_field)
+    players_to_draw, referees_to_draw, balls_to_draw = (
+        view_transformer.transform_tracks(tracks)
+    )
 
     # Draw output video frames
     drawer = Drawer()
     output_video_frames = drawer.draw_annotations(video_frames, tracks)
+    output_video_frames = drawer.draw_keypoints(output_video_frames, keypoints)
+    # output_video_frames = drawer.draw_2d_map(output_video_frames, map_tracks)
 
     # save video
     save_video(
         output_video_frames,
-        f"{CONFIG_DICT['output_video_path']}/tracking_system_output.mp4",
+        CONFIG_DICT["output_video_path"],
     )

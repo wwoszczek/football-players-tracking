@@ -16,15 +16,18 @@ class Tracker:
     def _detect_frames(self, frames: List, batch_size: int = 20) -> List:
         detections = list()
         for i in range(0, len(frames), batch_size):
-            detections_batch = self.model.predict(frames[i : i + batch_size], conf=0.3)
+            detections_batch = self.model.predict(frames[i : i + batch_size], conf=0.1)
             detections += detections_batch
         return detections
 
     def get_object_tracks(
-        self, frames, read_from_cache: bool = False
+        self,
+        frames,
+        read_from_cache: bool = False,
+        cache_path: str = "output/tracks_cache.pickle",
     ) -> Dict[str, List]:
         if read_from_cache:
-            with open("output/tracks_cache.yaml", "rb") as tracks_cache:
+            with open(cache_path, "rb") as tracks_cache:
                 tracks = pickle.load(tracks_cache)
             return tracks
 
@@ -76,10 +79,8 @@ class Tracker:
 
                 if cls_id == cls_names_inv["ball"]:
                     tracks["ball"][frame_num][1] = {"bbox": bbox}
-                    tracks["ball"][frame_num][1]["position"] = get_center_of_bbox(bbox)
 
-        if not os.path.exists("output/tracks_cache.yaml"):
-            with open("output/tracks_cache.yaml", "wb") as tracks_cache:
-                pickle.dump(tracks, tracks_cache)
+        with open(cache_path, "wb") as tracks_cache:
+            pickle.dump(tracks, tracks_cache)
 
         return tracks
