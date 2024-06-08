@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
 from typing import List
+import supervision as sv
+
+from src.field.football_field import FootballField
 from src.utils.utils import get_center_of_bbox, get_bbox_width, get_bbox_height
 
 
@@ -147,6 +150,66 @@ class Drawer:
                 frame = self._draw_triangle_xy_with_caption(
                     frame, keypoint, caption=keypoint_id
                 )
+
+            output_video_frames.append(frame)
+
+        return output_video_frames
+
+    def draw_2d_map(
+        self,
+        frames,
+        football_field: FootballField,
+        players_to_draw,
+        referees_to_draw,
+        balls_to_draw,
+        alpha=0.6,
+    ):
+
+        output_video_frames = list()
+        for frame_num, frame in enumerate(frames):
+            field_2d_frame = football_field.draw_players(
+                players_to_draw[frame_num], radius=25
+            )
+            field_2d_frame = football_field.draw_players(
+                referees_to_draw[frame_num],
+                soccer_field=field_2d_frame,
+                face_color=sv.Color.YELLOW,
+                radius=20,
+            )
+            field_2d_frame = football_field.draw_players(
+                balls_to_draw[frame_num],
+                soccer_field=field_2d_frame,
+                face_color=sv.Color.WHITE,
+                radius=15,
+            )
+
+            # Resize the field_2d_frame to half its size
+            small_height, small_width, _ = field_2d_frame.shape
+            field_2d_frame_resized = cv2.resize(
+                field_2d_frame, (int(small_width / 2.5), int(small_height / 2.5))
+            )
+
+            # Get dimensions of the images
+            large_height, large_width, _ = frame.shape
+            resized_height, resized_width, _ = field_2d_frame_resized.shape
+
+            # Calculate the position to place the small image (bottom middle)
+            x_offset = (large_width - resized_width) // 2
+            y_offset = large_height - resized_height
+
+            frame[
+                y_offset : y_offset + resized_height,
+                x_offset : x_offset + resized_width,
+            ] = cv2.addWeighted(
+                field_2d_frame_resized,
+                alpha,
+                frame[
+                    y_offset : y_offset + resized_height,
+                    x_offset : x_offset + resized_width,
+                ],
+                1 - alpha,
+                0,
+            )
 
             output_video_frames.append(frame)
 

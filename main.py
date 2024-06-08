@@ -37,7 +37,6 @@ if __name__ == "__main__":
 
     # Football field class
     football_field = FootballField()
-    print(football_field.config.vertices)
 
     # Initialize view transformer which will calculate target points based on homography matrices
     view_transformer = ViewTransformer(keypoints, football_field)
@@ -48,8 +47,14 @@ if __name__ == "__main__":
     # Draw output video frames
     drawer = Drawer()
     output_video_frames = drawer.draw_annotations(video_frames, tracks)
-    output_video_frames = drawer.draw_keypoints(output_video_frames, keypoints)
-    # output_video_frames = drawer.draw_2d_map(output_video_frames, map_tracks)
+    # output_video_frames = drawer.draw_keypoints(output_video_frames, keypoints)
+    output_video_frames = drawer.draw_2d_map(
+        output_video_frames,
+        football_field,
+        players_to_draw,
+        referees_to_draw,
+        balls_to_draw,
+    )
 
     # save video
     save_video(
