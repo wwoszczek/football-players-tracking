@@ -37,9 +37,6 @@ if __name__ == "__main__":
         cache_path=CONFIG_DICT["keypoints_cache_path"],
     )
 
-    # Football field class
-    football_field = FootballField()
-
     # Assign Player Teams
     team_assigner = TeamAssigner()
     tracks = team_assigner.assign_players_teams(tracks, video_frames)
@@ -49,6 +46,9 @@ if __name__ == "__main__":
     tracks, team_ball_control = possession_assigner.assign_and_calculate_possession(
         tracks
     )
+
+    # Football field class
+    football_field = FootballField()
 
     # Initialize view transformer which will calculate target points based on homography matrices
     view_transformer = ViewTransformer(keypoints, football_field)
@@ -68,6 +68,10 @@ if __name__ == "__main__":
         players_team_2_to_draw,
         referees_to_draw,
         balls_to_draw,
+    )
+
+    output_video_frames = drawer.draw_possession_percentages(
+        output_video_frames, team_ball_control
     )
 
     # save video

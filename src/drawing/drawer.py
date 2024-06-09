@@ -50,7 +50,7 @@ class Drawer:
                 frame,
                 f"{track_id}",
                 (int(x1_rect + 12), int(y1_rect + 15)),
-                cv2.FONT_HERSHEY_SIMPLEX,
+                cv2.FONT_HERSHEY_DUPLEX,
                 0.6,
                 (0, 0, 0),
                 2,
@@ -98,7 +98,7 @@ class Drawer:
             frame,
             f"{caption}",
             (int(x), int(y - 25)),
-            cv2.FONT_HERSHEY_SIMPLEX,
+            cv2.FONT_HERSHEY_DUPLEX,
             0.6,
             (0, 0, 0),
             2,
@@ -227,3 +227,100 @@ class Drawer:
             output_video_frames.append(frame)
 
         return output_video_frames
+
+    def _update_possession_percentages(self, frame_num, frame, team_ball_control):
+        height, width, _ = frame.shape
+
+        # Calculate the positions based on frame size
+        left_x1, left_y1 = int(width * 0.05), int(height * 0.85)
+        left_x2, left_y2 = int(width * 0.35), int(height * 0.95)
+        right_x1, right_y1 = int(width * 0.65), int(height * 0.85)
+        right_x2, right_y2 = int(width * 0.95), int(height * 0.95)
+
+        overlay = frame.copy()
+        cv2.rectangle(
+            overlay, (left_x1, left_y1), (left_x2, left_y2), (255, 255, 255), -1
+        )
+        cv2.rectangle(
+            overlay, (right_x1, right_y1), (right_x2, right_y2), (255, 255, 255), -1
+        )
+        alpha = 0.4
+        cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
+
+        team_ball_control_till_frame = team_ball_control[: frame_num + 1]
+        # Get the number of times each team had ball control
+        team_1_num_frames = team_ball_control_till_frame[
+            team_ball_control_till_frame == 1
+        ].shape[0]
+        team_2_num_frames = team_ball_control_till_frame[
+            team_ball_control_till_frame == 2
+        ].shape[0]
+        total_frames = team_1_num_frames + team_2_num_frames
+        team_1 = team_1_num_frames / total_frames
+        team_2 = team_2_num_frames / total_frames
+
+        percentage_text_team1 = f"{int(team_1 * 100)}%"
+        percentage_text_team2 = f"{int(team_2 * 100)}%"
+
+        # Center the text within the rectangles
+        text_size_team1 = cv2.getTextSize(
+            f"Team 1: {percentage_text_team1}", cv2.FONT_HERSHEY_DUPLEX, 2, 8
+        )[0]
+        text_x_team1 = left_x1 + (left_x2 - left_x1 - text_size_team1[0]) // 2
+        text_y_team1 = left_y1 + (left_y2 - left_y1 + text_size_team1[1]) // 2
+
+        text_size_team2 = cv2.getTextSize(
+            f"Team 1: {percentage_text_team1}", cv2.FONT_HERSHEY_DUPLEX, 2, 8
+        )[0]
+        text_x_team2 = right_x1 + (right_x2 - right_x1 - text_size_team2[0]) // 2
+        text_y_team2 = right_y1 + (right_y2 - right_y1 + text_size_team2[1]) // 2
+
+        # Draw the text with white color and thicker black edges
+        cv2.putText(
+            frame,
+            f"Team 1: {percentage_text_team2}",
+            (text_x_team1, text_y_team1),
+            cv2.FONT_HERSHEY_DUPLEX,
+            2,
+            (0, 0, 0),
+            10,
+        )
+        cv2.putText(
+            frame,
+            f"Team 1: {percentage_text_team2}",
+            (text_x_team1, text_y_team1),
+            cv2.FONT_HERSHEY_DUPLEX,
+            2,
+            (255, 255, 255),
+            2,
+        )
+
+        cv2.putText(
+            frame,
+            f"Team 2: {percentage_text_team1}",
+            (text_x_team2, text_y_team2),
+            cv2.FONT_HERSHEY_DUPLEX,
+            2,
+            (0, 0, 0),
+            10,
+        )
+        cv2.putText(
+            frame,
+            f"Team 2: {percentage_text_team1}",
+            (text_x_team2, text_y_team2),
+            cv2.FONT_HERSHEY_DUPLEX,
+            2,
+            (255, 255, 255),
+            2,
+        )
+
+        return frame
+
+    def draw_possession_percentages(self, frames, team_ball_control):
+        output_frames = list()
+        for frame_num, frame in enumerate(frames):
+            output_frames.append(
+                self._update_possession_percentages(frame_num, frame, team_ball_control)
+            )
+
+        return output_frames
