@@ -42,7 +42,7 @@ class ViewTransformer:
         self.homography_matrices = homography_matrices
 
     def _transform_points(
-        self, tracks, object_type="players"
+        self, tracks, object_type="players", team_id=1
     ) -> List[npt.NDArray[np.float32]]:
         """
         Transform source points to target points using homography matrices calulated
@@ -69,11 +69,15 @@ class ViewTransformer:
                     list()
                 )  # ??? how to append empty point for later drawing
                 continue
+
             bboxes = track_dict.values()
             points = list()
             for bbox in bboxes:
                 if object_type == "ball":
                     points.append(get_center_of_bbox(bbox["bbox"]))
+                elif object_type == "players":
+                    if bbox["team"] == team_id:
+                        points.append(bbox["position"])
                 else:
                     points.append(bbox["position"])
             points = np.array(points)
@@ -88,8 +92,18 @@ class ViewTransformer:
         return target_points_list
 
     def transform_tracks(self, tracks):
-        target_players = self._transform_points(tracks, object_type="players")
+        target_players_team_1 = self._transform_points(
+            tracks, object_type="players", team_id=1
+        )
+        target_players_team_2 = self._transform_points(
+            tracks, object_type="players", team_id=2
+        )
         target_referees = self._transform_points(tracks, object_type="referees")
         target_balls = self._transform_points(tracks, object_type="ball")
 
-        return target_players, target_referees, target_balls
+        return (
+            target_players_team_1,
+            target_players_team_2,
+            target_referees,
+            target_balls,
+        )

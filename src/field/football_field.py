@@ -313,6 +313,11 @@ class FootballField:
         if soccer_field is None:
             soccer_field = self.draw_soccer_field(padding=padding, scale=scale)
 
+        try:
+            face_color = face_color.as_bgr()
+        except AttributeError:
+            pass
+
         scaled_padding = padding
         for position in xy:
             point = (
@@ -323,7 +328,7 @@ class FootballField:
                 img=soccer_field,
                 center=point,
                 radius=radius,
-                color=face_color.as_bgr(),
+                color=face_color,
                 thickness=-1,
             )
             cv2.circle(

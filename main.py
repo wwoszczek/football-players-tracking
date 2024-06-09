@@ -4,7 +4,9 @@ from src.tracking.keypoints_detector import KeypointsDetector
 from src.tracking.interpolator import Interpolator
 from src.view_transformer.view_transformer import ViewTransformer
 from src.field.football_field import FootballField
+from src.possession.possession_assigner import PossessionAssigner
 from src.drawing.drawer import Drawer
+from src.team_assigner.team_assigner import TeamAssigner
 import yaml
 
 with open("config.yaml", "r") as tracking_config_stream:
@@ -38,9 +40,19 @@ if __name__ == "__main__":
     # Football field class
     football_field = FootballField()
 
+    # Assign Player Teams
+    team_assigner = TeamAssigner()
+    tracks = team_assigner.assign_players_teams(tracks, video_frames)
+
+    # Assign ball possession
+    possession_assigner = PossessionAssigner()
+    tracks, team_ball_control = possession_assigner.assign_and_calculate_possession(
+        tracks
+    )
+
     # Initialize view transformer which will calculate target points based on homography matrices
     view_transformer = ViewTransformer(keypoints, football_field)
-    players_to_draw, referees_to_draw, balls_to_draw = (
+    players_team_1_to_draw, players_team_2_to_draw, referees_to_draw, balls_to_draw = (
         view_transformer.transform_tracks(tracks)
     )
 
@@ -51,7 +63,9 @@ if __name__ == "__main__":
     output_video_frames = drawer.draw_2d_map(
         output_video_frames,
         football_field,
-        players_to_draw,
+        team_assigner,
+        players_team_1_to_draw,
+        players_team_2_to_draw,
         referees_to_draw,
         balls_to_draw,
     )

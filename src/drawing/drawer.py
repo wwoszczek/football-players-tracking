@@ -4,6 +4,7 @@ from typing import List
 import supervision as sv
 
 from src.field.football_field import FootballField
+from src.team_assigner.team_assigner import TeamAssigner
 from src.utils.utils import get_center_of_bbox, get_bbox_width, get_bbox_height
 
 
@@ -28,7 +29,7 @@ class Drawer:
             endAngle=235,
             color=color,
             thickness=2,
-            lineType=cv2.LINE_4,
+            lineType=cv2.LINE_8,
         )
 
         if track_id is not None:
@@ -121,8 +122,10 @@ class Drawer:
                     frame, player["bbox"], color, track_id
                 )
 
-                # if player.get("has_ball", False):
-                #     frame = self._draw_traingle(frame, player["bbox"], (0, 0, 255))
+                if player.get("has_ball", False):
+                    frame = self._draw_traingle(
+                        frame, player["bbox"], player["team_color"]
+                    )
 
             # Draw Referee
             for referee in referee_dict.values():
@@ -132,7 +135,7 @@ class Drawer:
 
             # Draw ball
             for ball in ball_dict.values():
-                frame = self._draw_traingle(frame, ball["bbox"], (0, 255, 0))
+                frame = self._draw_traingle(frame, ball["bbox"], (191, 126, 58))
 
             output_video_frames.append(frame)
 
@@ -159,7 +162,9 @@ class Drawer:
         self,
         frames,
         football_field: FootballField,
-        players_to_draw,
+        team_asigner: TeamAssigner,
+        players_team_1_to_draw,
+        players_team_2_to_draw,
         referees_to_draw,
         balls_to_draw,
         alpha=0.6,
@@ -168,7 +173,15 @@ class Drawer:
         output_video_frames = list()
         for frame_num, frame in enumerate(frames):
             field_2d_frame = football_field.draw_players(
-                players_to_draw[frame_num], radius=25
+                players_team_1_to_draw[frame_num],
+                radius=25,
+                face_color=team_asigner.team_colors[1],
+            )
+            field_2d_frame = football_field.draw_players(
+                players_team_2_to_draw[frame_num],
+                soccer_field=field_2d_frame,
+                face_color=team_asigner.team_colors[2],
+                radius=25,
             )
             field_2d_frame = football_field.draw_players(
                 referees_to_draw[frame_num],
