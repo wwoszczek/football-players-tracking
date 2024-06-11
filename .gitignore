@@ -6,3 +6,4 @@ models/*
 .idea/*
 *.mp4
 output/*
+*.pyc

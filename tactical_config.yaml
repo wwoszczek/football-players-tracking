@@ -1,0 +1,10 @@
+test_video_path: ./input/demo_vid_1.mp4
+output_video_path: ./output/tracking_system_output_tactical.mp4
+players_model_path: ./models/tactical_players_yolov8/weights/best.pt
+keypoints_model_path: ./models/keypoints_yolov8/weights/best.pt
+tracking_cache_path: ./output/tracks_cache_1.pickle
+keypoints_cache_path: ./output/keypoints_cache_1.pickle
+
+
+
+
