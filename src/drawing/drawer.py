@@ -282,7 +282,7 @@ class Drawer:
         text_y_team1 = left_y1 + (left_y2 - left_y1 + text_size_team1[1]) // 2
 
         text_size_team2 = cv2.getTextSize(
-            f"Team 1: {percentage_text_team1}", cv2.FONT_HERSHEY_DUPLEX, font_scale, 8
+            f"Team 2: {percentage_text_team2}", cv2.FONT_HERSHEY_DUPLEX, font_scale, 8
         )[0]
         text_x_team2 = right_x1 + (right_x2 - right_x1 - text_size_team2[0]) // 2
         text_y_team2 = right_y1 + (right_y2 - right_y1 + text_size_team2[1]) // 2
@@ -290,7 +290,7 @@ class Drawer:
         # Draw the text with white color and thicker black edges
         cv2.putText(
             frame,
-            f"Team 1: {percentage_text_team2}",
+            f"Team 1: {percentage_text_team1}",
             (text_x_team1, text_y_team1),
             cv2.FONT_HERSHEY_DUPLEX,
             font_scale,
@@ -299,7 +299,7 @@ class Drawer:
         )
         cv2.putText(
             frame,
-            f"Team 1: {percentage_text_team2}",
+            f"Team 1: {percentage_text_team1}",
             (text_x_team1, text_y_team1),
             cv2.FONT_HERSHEY_DUPLEX,
             font_scale,
@@ -309,7 +309,7 @@ class Drawer:
 
         cv2.putText(
             frame,
-            f"Team 2: {percentage_text_team1}",
+            f"Team 2: {percentage_text_team2}",
             (text_x_team2, text_y_team2),
             cv2.FONT_HERSHEY_DUPLEX,
             font_scale,
@@ -318,7 +318,7 @@ class Drawer:
         )
         cv2.putText(
             frame,
-            f"Team 2: {percentage_text_team1}",
+            f"Team 2: {percentage_text_team2}",
             (text_x_team2, text_y_team2),
             cv2.FONT_HERSHEY_DUPLEX,
             font_scale,
