@@ -1,11 +1,8 @@
-import numpy as np
 from ultralytics import YOLO
 import supervision as sv
 from typing import List, Dict
 import pickle
-import os
-from src.utils.utils import get_center_of_bbox, get_foot_position
-import cv2
+from src.utils.utils import get_foot_position
 
 
 class Tracker:
