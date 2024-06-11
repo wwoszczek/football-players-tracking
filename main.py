@@ -9,7 +9,7 @@ from src.drawing.drawer import Drawer
 from src.team_assigner.team_assigner import TeamAssigner
 import yaml
 
-with open("config.yaml", "r") as tracking_config_stream:
+with open("tactical_config.yaml", "r") as tracking_config_stream:
     CONFIG_DICT = yaml.safe_load(tracking_config_stream)
 
 if __name__ == "__main__":
