@@ -196,14 +196,20 @@ class Drawer:
                 radius=15,
             )
 
-            # Resize the field_2d_frame to half its size
-            small_height, small_width, _ = field_2d_frame.shape
-            field_2d_frame_resized = cv2.resize(
-                field_2d_frame, (int(small_width / 2.5), int(small_height / 2.5))
-            )
-
             # Get dimensions of the images
             large_height, large_width, _ = frame.shape
+            small_height, small_width, _ = field_2d_frame.shape
+
+            if large_height <= 720:
+                field_2d_frame_resized = cv2.resize(
+                    field_2d_frame, (int(small_width / 3.75), int(small_height / 3.75))
+                )
+            else:
+                small_height, small_width, _ = field_2d_frame.shape
+                field_2d_frame_resized = cv2.resize(
+                    field_2d_frame, (int(small_width / 2.5), int(small_height / 2.5))
+                )
+
             resized_height, resized_width, _ = field_2d_frame_resized.shape
 
             # Calculate the position to place the small image (bottom middle)
@@ -259,18 +265,23 @@ class Drawer:
         team_1 = team_1_num_frames / total_frames
         team_2 = team_2_num_frames / total_frames
 
+        if height <= 720:
+            font_scale = 1
+        else:
+            font_scale = 2
+
         percentage_text_team1 = f"{int(team_1 * 100)}%"
         percentage_text_team2 = f"{int(team_2 * 100)}%"
 
         # Center the text within the rectangles
         text_size_team1 = cv2.getTextSize(
-            f"Team 1: {percentage_text_team1}", cv2.FONT_HERSHEY_DUPLEX, 2, 8
+            f"Team 1: {percentage_text_team1}", cv2.FONT_HERSHEY_DUPLEX, font_scale, 8
         )[0]
         text_x_team1 = left_x1 + (left_x2 - left_x1 - text_size_team1[0]) // 2
         text_y_team1 = left_y1 + (left_y2 - left_y1 + text_size_team1[1]) // 2
 
         text_size_team2 = cv2.getTextSize(
-            f"Team 1: {percentage_text_team1}", cv2.FONT_HERSHEY_DUPLEX, 2, 8
+            f"Team 1: {percentage_text_team1}", cv2.FONT_HERSHEY_DUPLEX, font_scale, 8
         )[0]
         text_x_team2 = right_x1 + (right_x2 - right_x1 - text_size_team2[0]) // 2
         text_y_team2 = right_y1 + (right_y2 - right_y1 + text_size_team2[1]) // 2
@@ -281,7 +292,7 @@ class Drawer:
             f"Team 1: {percentage_text_team2}",
             (text_x_team1, text_y_team1),
             cv2.FONT_HERSHEY_DUPLEX,
-            2,
+            font_scale,
             (0, 0, 0),
             10,
         )
@@ -290,7 +301,7 @@ class Drawer:
             f"Team 1: {percentage_text_team2}",
             (text_x_team1, text_y_team1),
             cv2.FONT_HERSHEY_DUPLEX,
-            2,
+            font_scale,
             (255, 255, 255),
             2,
         )
@@ -300,7 +311,7 @@ class Drawer:
             f"Team 2: {percentage_text_team1}",
             (text_x_team2, text_y_team2),
             cv2.FONT_HERSHEY_DUPLEX,
-            2,
+            font_scale,
             (0, 0, 0),
             10,
         )
@@ -309,7 +320,7 @@ class Drawer:
             f"Team 2: {percentage_text_team1}",
             (text_x_team2, text_y_team2),
             cv2.FONT_HERSHEY_DUPLEX,
-            2,
+            font_scale,
             (255, 255, 255),
             2,
         )
