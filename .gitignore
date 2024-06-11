@@ -6,3 +6,8 @@ models/*
 .idea/*
 *.mp4
 output/*
+input/*
+!output/.gitkeep
+!models/.gitkeep
+!data/.gitkeep
+!input/.gitkeep
