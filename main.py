@@ -33,7 +33,7 @@ if __name__ == "__main__":
     keypoints_detector = KeypointsDetector(CONFIG_DICT["keypoints_model_path"])
     keypoints = keypoints_detector.get_keypoints_positions(
         video_frames,
-        read_from_cache=False,
+        read_from_cache=True,
         cache_path=CONFIG_DICT["keypoints_cache_path"],
     )
 
