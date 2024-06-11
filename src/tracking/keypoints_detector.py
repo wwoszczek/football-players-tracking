@@ -10,40 +10,40 @@ class KeypointsDetector:
         # dict in a form of
         # tactical_model_keypoint_class: tv_camera_model_keypoint_class
         self.keypoints_map_dict = {
-            0: 9,  # ok
-            1: 1,  # ok
-            2: 6,  # ok
-            3: 2,  # ok
-            4: 10,  # ok
-            5: 26,
-            6: 20,
-            7: 17,
-            8: 7,  # ok
-            9: 3,  # ok
-            10: 11,  # ok
-            11: 18,
-            12: 14,  # ok
-            13: 13,  # ok
-            14: 15,  # ok
-            15: 13,
-            16: 17,  # ok
-            17: 5,
-            18: 22,  # ok
-            19: 6,
-            20: 18,  # ok
-            21: 2,
-            22: 20,  # ok
-            23: 9,
-            24: 23,  # ok
-            25: 1,
-            26: 19,  # ok
-            27: 10,
+            0: 10,  # ok
+            1: 2,  # ok
+            2: 7,  # ok
+            3: 3,  # ok
+            4: 11,  # ok
+            5: 1,  # ???
+            6: 13,  # ok
+            7: 5,  # ok
+            8: 8,  # ok
+            9: 4,  # ok
+            10: 12,  # ok
+            11: 6,  # ok
+            12: 15,  # ok
+            13: 14,  # ok
+            14: 16,  # ok
+            15: 17,  # ???
+            16: 18,  # ok
+            17: 26,  # ok
+            18: 23,  # ok
+            19: 27,  # ok
+            20: 19,  # ok
+            21: 25,  # ok
+            22: 21,  # ok
+            23: 29,  # ok
+            24: 24,  # ok
+            25: 28,  # ok
+            26: 20,  # ok
+            27: 30,  # ???
         }
 
     def _detect_keypoints(self, frames, batch_size: int = 20) -> List:
         detections = list()
         for i in range(0, len(frames), batch_size):
-            detections_batch = self.model.predict(frames[i : i + batch_size], conf=0.3)
+            detections_batch = self.model.predict(frames[i : i + batch_size], conf=0.1)
             detections += detections_batch
         return detections
 
