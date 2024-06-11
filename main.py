@@ -14,7 +14,7 @@ with open("config.yaml", "r") as tracking_config_stream:
 
 if __name__ == "__main__":
     # read video
-    video_frames = read_video(CONFIG_DICT["test_video_path"])
+    video_frames = read_video(CONFIG_DICT["test_video_path"])[:100]
     print(f"Frames to process: {len(video_frames)}")
 
     # Initialize Tracker
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     keypoints_detector = KeypointsDetector(CONFIG_DICT["keypoints_model_path"])
     keypoints = keypoints_detector.get_keypoints_positions(
         video_frames,
-        read_from_cache=True,
+        read_from_cache=False,
         cache_path=CONFIG_DICT["keypoints_cache_path"],
     )
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     # Draw output video frames
     drawer = Drawer()
     output_video_frames = drawer.draw_annotations(video_frames, tracks)
-    # output_video_frames = drawer.draw_keypoints(output_video_frames, keypoints)
+    output_video_frames = drawer.draw_keypoints(output_video_frames, keypoints)
     output_video_frames = drawer.draw_2d_map(
         output_video_frames,
         football_field,
