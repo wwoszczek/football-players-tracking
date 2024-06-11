@@ -9,12 +9,12 @@ from src.drawing.drawer import Drawer
 from src.team_assigner.team_assigner import TeamAssigner
 import yaml
 
-with open("tactical_config.yaml", "r") as tracking_config_stream:
+with open("tv_config.yaml", "r") as tracking_config_stream:
     CONFIG_DICT = yaml.safe_load(tracking_config_stream)
 
 if __name__ == "__main__":
     # read video
-    video_frames = read_video(CONFIG_DICT["test_video_path"])[:100]
+    video_frames = read_video(CONFIG_DICT["test_video_path"])
     print(f"Frames to process: {len(video_frames)}")
 
     # Initialize Tracker
