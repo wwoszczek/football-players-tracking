@@ -16,3 +16,6 @@ TODO
 - Predict players teams
 - Track ball movements
 
+Notes:
+dont mix non tactital models with tactical clis and vice versa - works really bad
+

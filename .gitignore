@@ -11,3 +11,4 @@ input/*
 !models/.gitkeep
 !data/.gitkeep
 !input/.gitkeep
+*.pyc
