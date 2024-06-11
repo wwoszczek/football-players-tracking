@@ -45,11 +45,12 @@ class Drawer:
                 color,
                 cv2.FILLED,
             )
+            padding = 2 if track_id >= 100 else 12
 
             cv2.putText(
                 frame,
                 f"{track_id}",
-                (int(x1_rect + 12), int(y1_rect + 15)),
+                (int(x1_rect + padding), int(y1_rect + 15)),
                 cv2.FONT_HERSHEY_DUPLEX,
                 0.6,
                 (0, 0, 0),
@@ -106,7 +107,7 @@ class Drawer:
 
         return frame
 
-    def draw_annotations(self, video_frames, tracks, team_ball_control=None):
+    def draw_annotations(self, video_frames, tracks):
         output_video_frames = []
         for frame_num, frame in enumerate(video_frames):
             frame = frame.copy()
