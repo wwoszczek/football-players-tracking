@@ -41,7 +41,8 @@ def process_video(
     confidence_threshold,
     iou_threshold,
     interpolate_ball,
-    draw_keypoints,
+    draw_mini_map,
+    draw_possession,
     read_from_cache,
 ):
     # Update model paths based on camera view
@@ -95,22 +96,21 @@ def process_video(
     drawer = Drawer()
     output_video_frames = drawer.draw_annotations(video_frames, tracks)
 
-    if draw_keypoints:
-        output_video_frames = drawer.draw_keypoints(output_video_frames, keypoints)
+    if draw_mini_map:
+        output_video_frames = drawer.draw_2d_map(
+            output_video_frames,
+            football_field,
+            team_assigner,
+            players_team_1_to_draw,
+            players_team_2_to_draw,
+            referees_to_draw,
+            balls_to_draw,
+        )
 
-    output_video_frames = drawer.draw_2d_map(
-        output_video_frames,
-        football_field,
-        team_assigner,
-        players_team_1_to_draw,
-        players_team_2_to_draw,
-        referees_to_draw,
-        balls_to_draw,
-    )
-
-    output_video_frames = drawer.draw_possession_percentages(
-        output_video_frames, team_ball_control
-    )
+    if draw_possession:
+        output_video_frames = drawer.draw_possession_percentages(
+            output_video_frames, team_ball_control
+        )
 
     # Save video to a temporary file
     temp_video_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
@@ -134,7 +134,8 @@ def main():
         "IOU Threshold", 0.0, 1.0, config_dict.get("iou_threshold", 0.5)
     )
     interpolate_ball = st.checkbox("Interpolate Ball Position", value=True)
-    draw_keypoints = st.checkbox("Draw Keypoints", value=False)
+    draw_mini_map = st.checkbox("Draw Mini-Map", value=True)
+    draw_possesion = st.checkbox("Draw Possession %", value=True)
 
     # Display demo video
     st.video(config_dict["test_video_path"])
@@ -165,7 +166,8 @@ def main():
             confidence_threshold,
             iou_threshold,
             interpolate_ball,
-            draw_keypoints,
+            draw_mini_map,
+            draw_possesion,
             read_from_cache,
         )
         st.video(output_video_path)
