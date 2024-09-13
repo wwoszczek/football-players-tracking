@@ -1,9 +1,10 @@
 # Football players tracking with deep learning techniques
 
-**Project goal:** Web application to automate football players tracking.  
-The goal of this project is to create a system dedicated to acquiring football players' tracking data and visualizing it automatically. The user will be able to upload a video with a fragment of a football match and, in return, receive analytical data based on that footage. These data include tracking data and the percentage of teams' ball possession throughout the video clip.
+[![Football Tracking Demo](https://img.youtube.com/vi/pV0spkNN5EE/0.jpg)](https://youtu.be/pV0spkNN5EE)
 
-## Installation & How to use?
+
+Web application to automate football players tracking.  
+The goal of this project is to create a system dedicated to acquiring football players' tracking data and visualizing it automatically. The user is able to upload a video with a fragment of a football match and, in return, receive analytical data based on that footage. These data include tracking data and the percentage of teams' ball possession throughout the video clip.
 
 ## Object detection models weights 
 
@@ -11,6 +12,8 @@ Models weights for keypoints and players detections
 need to be downloaded and put into the *models* directory (adjust paths in config files).
 Weights are avaliable for download [here](https://drive.google.com/drive/folders/1Gd394woIxfGoTMwppeBoTMg1DnQxrxfj?usp=sharing).
 
+
+## Installation & How to use?
 
 ### Prerequisites
 
