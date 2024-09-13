@@ -1,5 +1,7 @@
 import cv2
 from typing import List
+import subprocess
+import tempfile
 
 
 def read_video(video_path: str) -> List:
@@ -31,17 +33,31 @@ def save_video(output_video_frames, output_video_path, fps=24):
 
     # Get the height and width of the frames
     height, width, _ = output_video_frames[0].shape
+    size = (width, height)
 
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    temp_raw_video_path = tempfile.NamedTemporaryFile(delete=False, suffix=".avi").name
     out = cv2.VideoWriter(
-        output_video_path,
-        fourcc,
-        fps,
-        (width, height),
+        temp_raw_video_path, cv2.VideoWriter_fourcc(*"XVID"), fps, size
     )
+
     for frame in output_video_frames:
         out.write(frame)
+
     out.release()
+
+    # Use ffmpeg to convert the raw AVI video to MP4 with H.264 codec
+    command = [
+        "ffmpeg",
+        "-y",
+        "-i",
+        temp_raw_video_path,
+        "-vcodec",
+        "libx264",
+        "-pix_fmt",
+        "yuv420p",
+        output_video_path,
+    ]
+    subprocess.run(command, check=True)
 
 
 def get_center_of_bbox(bbox):
